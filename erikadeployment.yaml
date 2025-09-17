@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-erika
+  namespace: treasure-hunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treasure-erika
+  template:
+    metadata:
+      labels:
+        app: treasure-erika
+    spec:
+      containers:
+        - name: web
+          image: erikagarciamnz/treasure-2259395:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TITLE
+              value: "Treasure Hunt — Erika"
+            - name: STUDENT
+              value: "Erika Garcia"
+            - name: SALT
+              value: "DS3univalle"
+            - name: KEY_HASH
+              value: "50dd925c81e2822dc3625ba7cbe640d1e572474d8869e329d3c79b00d9b39e4b"
+            - name: CLUE
+              valueFrom:
+                secretKeyRef:
+                  name: erika-clue
+                  key: CLUE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-erika
+  namespace: treasure-hunt
+spec:
+  selector:
+    app: treasure-erika
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: NodePort
