@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-david
+  namespace: treasure-hunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treasure-david
+  template:
+    metadata:
+      labels:
+        app: treasure-david
+    spec:
+      containers:
+        - name: web
+          image: enciso223/treasure-1926462:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TITLE
+              value: "Treasure Hunt — David"
+            - name: STUDENT
+              value: "David Alejandro Enciso Gutierrez"
+            - name: SALT
+              value: "DS3univalle"
+            - name: KEY_HASH
+              value: "6314f4df537b60693a5608f18e82cddd584095b0396dcea8f5df122541c87008"
+            - name: CLUE
+              valueFrom:
+                secretKeyRef:
+                  name: david-clue
+                  key: CLUE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-david
+  namespace: treasure-hunt
+spec:
+  selector:
+    app: treasure-david
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: NodePort
