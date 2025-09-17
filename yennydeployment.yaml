@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-yenny
+  namespace: treasure-hunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treasure-yenny
+  template:
+    metadata:
+      labels:
+        app: treasure-yenny
+    spec:
+      containers:
+        - name: web
+          image: yennyrivas/treasure-2182527:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TITLE
+              value: "Treasure Hunt — yenny"
+            - name: STUDENT
+              value: "Yenny Rivas"
+            - name: SALT
+              value: "DS3univalle"
+            - name: KEY_HASH
+              value: "9124b31a7dc6b633000e0f2588f6d33c36dc9c3d872788b71d762273f846471e"
+            - name: CLUE
+              valueFrom:
+                secretKeyRef:
+                  name: yenny-clue
+                  key: CLUE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-yenny
+  namespace: treasure-hunt
+spec:
+  selector:
+    app: treasure-yenny
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: NodePort
