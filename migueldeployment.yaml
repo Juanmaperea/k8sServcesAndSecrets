@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-miguel
+  namespace: treasure-hunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treasure-miguel
+  template:
+    metadata:
+      labels:
+        app: treasure-miguel
+    spec:
+      containers:
+        - name: web
+          image: luxkun/treasure-2159832:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TITLE
+              value: "Treasure Hunt — Miguel"
+            - name: STUDENT
+              value: "Miguel Angel Escobar"
+            - name: SALT
+              value: "DS3univalle"
+            - name: KEY_HASH
+              value: "56a5aa683f0da783f6fdb2b06a278f717a6e5c5dcf5b16dc2646e45b77fbca6c"
+            - name: CLUE
+              valueFrom:
+                secretKeyRef:
+                  name: miguel-clue
+                  key: CLUE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-miguel
+  namespace: treasure-hunt
+spec:
+  selector:
+    app: treasure-miguel
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: NodePort
