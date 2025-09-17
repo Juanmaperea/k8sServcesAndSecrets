@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-alejandro
+  namespace: treasure-hunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treasure-alejandro
+  template:
+    metadata:
+      labels:
+        app: treasure-alejandro
+    spec:
+      containers:
+        - name: web
+          image: guealejo/treasure-2179652:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TITLE
+              value: "Treasure Hunt — Alejandro"
+            - name: STUDENT
+              value: "Alejandro Guerrero"
+            - name: SALT
+              value: "DS3univalle"
+            - name: KEY_HASH
+              value: "56766ec09d0b754be84eae35cfa8f1d98de551d7ab9740b13df5fdbcca713ba3"
+            - name: CLUE
+              valueFrom:
+                secretKeyRef:
+                  name: alejandro-clue
+                  key: CLUE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-alejandro
+  namespace: treasure-hunt
+spec:
+  selector:
+    app: treasure-alejandro
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: NodePort
