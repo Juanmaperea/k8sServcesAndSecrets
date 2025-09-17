@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: treasure-juan
+  namespace: treasure-hunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: treasure-juan
+  template:
+    metadata:
+      labels:
+        app: treasure-juan
+    spec:
+      containers:
+        - name: web
+          image: juanmapeco/treasure-1926462:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TITLE
+              value: "Treasure Hunt — Juan"
+            - name: STUDENT
+              value: "Juan Manuel Perea"
+            - name: SALT
+              value: "DS3univalle"
+            - name: KEY_HASH
+              value: "2ff49559eb378f1662cda5476e52e02ae4b79b687e68ce168e119e3ecd32bd44"
+            - name: CLUE
+              valueFrom:
+                secretKeyRef:
+                  name: juan-clue
+                  key: CLUE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: treasure-juan
+  namespace: treasure-hunt
+spec:
+  selector:
+    app: treasure-juan
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: NodePort
